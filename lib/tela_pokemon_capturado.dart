@@ -1,37 +1,54 @@
-// tela_pokemon_capturado.dart
-
 import 'package:flutter/material.dart';
+import 'package:terceira_prova/app_database.dart';
 import 'pokemon_model.dart';
 import 'tela_detalhes_pokemon.dart';
 import 'tela_soltar_pokemon.dart';
 
 class TelaPokemonCapturado extends StatefulWidget {
-  final List<Pokemon> pokemonsCapturados;
-
-  TelaPokemonCapturado({required this.pokemonsCapturados});
-
   @override
   _TelaPokemonCapturadoState createState() => _TelaPokemonCapturadoState();
 }
 
 class _TelaPokemonCapturadoState extends State<TelaPokemonCapturado> {
+  late List<Pokemon> _pokemonsCapturados;
+  late AppDatabase _appDatabase;
+
+  @override
+  void initState() {
+    super.initState();
+    _pokemonsCapturados = [];
+    initializeDatabase();
+  }
+
+  Future<void> initializeDatabase() async {
+    _appDatabase =
+        await $FloorAppDatabase.databaseBuilder('app_database.db').build();
+    await carregarPokemonsCapturados();
+  }
+
+  Future<void> carregarPokemonsCapturados() async {
+    final listaCapturados = await _appDatabase.pokemonDao.findAllPokemons();
+    setState(() {
+      _pokemonsCapturados = listaCapturados;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Pokémons Capturados'),
       ),
-      body: widget.pokemonsCapturados.isEmpty
+      body: _pokemonsCapturados.isEmpty
           ? Center(
               child: Text('Nenhum Pokémon capturado ainda.'),
             )
           : ListView.builder(
-              itemCount: widget.pokemonsCapturados.length,
+              itemCount: _pokemonsCapturados.length,
               itemBuilder: (context, index) {
-                final pokemon = widget.pokemonsCapturados[index];
+                final pokemon = _pokemonsCapturados[index];
                 return GestureDetector(
                   onTap: () {
-                    // Navegar para TelaDetalhesPokemon
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -41,7 +58,6 @@ class _TelaPokemonCapturadoState extends State<TelaPokemonCapturado> {
                     );
                   },
                   onLongPress: () {
-                    // Navegar para TelaSoltarPokemon
                     Navigator.push(
                       context,
                       MaterialPageRoute(

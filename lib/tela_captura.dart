@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:terceira_prova/tela_pokemon_capturado.dart';
+import 'package:terceira_prova/app_database.dart';
 import 'pokemon_model.dart';
 
 class TelaCaptura extends StatefulWidget {
@@ -14,10 +14,13 @@ class _TelaCapturaState extends State<TelaCaptura> {
   List<Pokemon> selectedPokemon = [];
   Set<String> pokemonsCapturados = {};
 
+  late AppDatabase appDatabase; // Use AppDatabase aqui
+
   @override
   void initState() {
     super.initState();
     fetchData();
+    initializeDatabase(); // Chame a inicialização do banco de dados aqui
   }
 
   Future<void> fetchData() async {
@@ -66,41 +69,53 @@ class _TelaCapturaState extends State<TelaCaptura> {
     setState(() {});
   }
 
-  void capturarPokemon(Pokemon pokemon) {
+  Future<void> initializeDatabase() async {
+    appDatabase = await $FloorAppDatabase
+        .databaseBuilder('app_database.db')
+        .build() as AppDatabase;
+  }
+
+  void capturarPokemon(Pokemon pokemon) async {
     if (!pokemonsCapturados.contains(pokemon.name)) {
       pokemonsCapturados.add(pokemon.name);
 
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Capturado!'),
-            content: Text('${pokemon.name} foi capturado!'),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  setState(() {}); // Atualiza a interface
-                  List<Pokemon> pokemonsCapturadosList = pokemonsCapturados
-                      .map((name) => allPokemon
-                          .firstWhere((pokemon) => pokemon.name == name))
-                      .toList();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => TelaPokemonCapturado(
-                        pokemonsCapturados: pokemonsCapturadosList,
-                      ),
-                    ),
-                  );
-                },
-                child: Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
+      try {
+        // Inserir no banco de dados
+        await appDatabase.pokemonDao.insertPokemon(pokemon);
+
+        // Exibir mensagem de sucesso
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Capturado!'),
+              content: Text('${pokemon.name} foi capturado!'),
+              actions: [
+                TextButton(
+                  onPressed: () async {
+                    Navigator.of(context).pop();
+
+                    // Atualiza a lista de Pokémon capturados
+                    await carregarPokemonsCapturados();
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      } catch (e) {
+        print('Erro ao capturar Pokémon: $e');
+      }
     }
+  }
+
+  Future<void> carregarPokemonsCapturados() async {
+    final listaCapturados = await appDatabase.pokemonDao.findAllPokemons();
+    setState(() {
+      pokemonsCapturados =
+          listaCapturados.map((pokemon) => pokemon.name).toSet();
+    });
   }
 
   @override

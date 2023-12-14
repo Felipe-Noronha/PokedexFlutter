@@ -33,9 +33,7 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
   final List<Widget> _telas = [
     TelaHome(),
     TelaCaptura(),
-    TelaPokemonCapturado(
-      pokemonsCapturados: [],
-    ),
+    TelaPokemonCapturado(),
   ];
 
   @override
