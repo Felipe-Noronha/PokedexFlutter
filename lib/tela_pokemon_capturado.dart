@@ -41,9 +41,7 @@ class _TelaPokemonCapturadoState extends State<TelaPokemonCapturado> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Pokémons Capturados'),
-      ),
+      appBar: null,
       body: _pokemonsCapturados.isEmpty
           ? Center(
               child: Text('Nenhum Pokémon capturado ainda.'),

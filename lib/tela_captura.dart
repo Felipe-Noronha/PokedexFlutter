@@ -121,9 +121,7 @@ class _TelaCapturaState extends State<TelaCaptura> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Tela de Captura'),
-      ),
+      appBar: null,
       body: selectedPokemon.isEmpty
           ? Center(
               child: CircularProgressIndicator(),
