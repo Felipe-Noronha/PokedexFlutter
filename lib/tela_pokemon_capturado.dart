@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:terceira_prova/app_database.dart';
+import 'package:terceira_prova/app_database.dart'; // Importe o seu banco de dados
+import 'package:terceira_prova/tela_soltar_pokemon.dart';
 import 'pokemon_model.dart';
 import 'tela_detalhes_pokemon.dart';
-import 'tela_soltar_pokemon.dart';
 
 class TelaPokemonCapturado extends StatefulWidget {
   @override
@@ -17,15 +17,20 @@ class _TelaPokemonCapturadoState extends State<TelaPokemonCapturado> {
   void initState() {
     super.initState();
     _pokemonsCapturados = [];
-    initializeDatabase();
+    _initializeDatabase();
   }
 
-  Future<void> initializeDatabase() async {
-    _appDatabase =
-        await $FloorAppDatabase.databaseBuilder('app_database.db').build();
+  // Método assíncrono para inicializar o banco de dados
+  _initializeDatabase() async {
+    _appDatabase = await $FloorAppDatabase
+        .databaseBuilder('app_database.db')
+        .build() as AppDatabase;
+
+    // Atualizar a lista de pokémons capturados sempre que a tela for exibida
     await carregarPokemonsCapturados();
   }
 
+  // Método para carregar a lista de pokémons capturados
   Future<void> carregarPokemonsCapturados() async {
     final listaCapturados = await _appDatabase.pokemonDao.findAllPokemons();
     setState(() {
@@ -49,6 +54,7 @@ class _TelaPokemonCapturadoState extends State<TelaPokemonCapturado> {
                 final pokemon = _pokemonsCapturados[index];
                 return GestureDetector(
                   onTap: () {
+                    // Navegar para TelaDetalhesPokemon
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -57,14 +63,20 @@ class _TelaPokemonCapturadoState extends State<TelaPokemonCapturado> {
                       ),
                     );
                   },
-                  onLongPress: () {
-                    Navigator.push(
+                  onLongPress: () async {
+                    // Navegar para TelaSoltarPokemon
+                    final resultado = await Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
                             TelaSoltarPokemon(pokemon: pokemon),
                       ),
                     );
+
+                    if (resultado == true) {
+                      // Se o resultado for true, recarregue a lista
+                      await carregarPokemonsCapturados();
+                    }
                   },
                   child: ListTile(
                     title: Text(pokemon.name),
