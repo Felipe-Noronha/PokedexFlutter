@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'tela_home.dart';
 import 'tela_captura.dart';
 import 'tela_pokemon_capturado.dart';
-import 'tela_sobre.dart'; // Importe sua TelaSobre
+import 'tela_sobre.dart';
 
 void main() {
   runApp(MyApp());
@@ -14,9 +14,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Meu App Pokémon',
       theme: ThemeData(
-        primarySwatch: Colors.red, // Cor primária (barra de navegação, etc.)
-        hintColor: Colors.white, // Cor de destaque
-        scaffoldBackgroundColor: Colors.white, // Cor de fundo do Scaffold
+        primarySwatch: Colors.red,
+        hintColor: Colors.white,
+        scaffoldBackgroundColor: Colors.white,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: TelaPrincipal(),
@@ -69,7 +69,7 @@ class _TelaPrincipalState extends State<TelaPrincipal> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.camera_alt),
+            icon: Icon(Icons.explore),
             label: 'Captura',
           ),
           BottomNavigationBarItem(

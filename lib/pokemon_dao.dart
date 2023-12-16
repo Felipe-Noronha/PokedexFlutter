@@ -18,7 +18,6 @@ abstract class PokemonDao {
   @delete
   Future<void> deletePokemon(Pokemon pokemon);
 
-  @Query(
-      'DELETE FROM pokemon WHERE id = :id') // Adicione esta linha para excluir por ID
+  @Query('DELETE FROM pokemon WHERE id = :id')
   Future<void> deletePokemonById(int id);
 }

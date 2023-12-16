@@ -1,8 +1,6 @@
-// pokemon_api.dart
-
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'pokemon_model.dart'; // Adicione esta linha
+import 'pokemon_model.dart';
 
 class PokemonApi {
   final String baseUrl = 'https://pokeapi.co/api/v2/pokemon/';

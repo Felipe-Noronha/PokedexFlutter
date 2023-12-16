@@ -26,8 +26,7 @@ class Pokemon {
       id: json['id'] ?? 0,
       name: json['name'] ?? '',
       url: json['url'] ?? '',
-      type: json['types'][0]['type']['name'] ??
-          'Unknown', // Defina um valor padrão ou lide com null aqui
+      type: json['types'][0]['type']['name'] ?? 'Unknown',
       baseExperience: json['base_experience'] ?? 0,
       height: json['height'] ?? 0,
       weight: json['weight'] ?? 0,

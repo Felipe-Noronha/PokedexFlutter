@@ -27,7 +27,6 @@ class TelaDetalhesPokemon extends StatelessWidget {
             Text('Experiência Base: ${pokemon.baseExperience}'),
             Text('Altura: ${pokemon.height}'),
             Text('Peso: ${pokemon.weight}'),
-            // Adicione mais informações conforme necessário
           ],
         ),
       ),

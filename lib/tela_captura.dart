@@ -2,7 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:terceira_prova/app_database.dart';
-import 'pokemon_model.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:terceira_prova/pokemon_model.dart';
 
 class TelaCaptura extends StatefulWidget {
   @override
@@ -14,13 +15,28 @@ class _TelaCapturaState extends State<TelaCaptura> {
   List<Pokemon> selectedPokemon = [];
   Set<String> pokemonsCapturados = {};
 
-  late AppDatabase appDatabase; // Use AppDatabase aqui
+  late AppDatabase appDatabase;
+
+  bool isLoading = true;
+  bool hasConnection = true;
 
   @override
   void initState() {
     super.initState();
-    fetchData();
-    initializeDatabase(); // Chame a inicialização do banco de dados aqui
+    checkConnectivity();
+  }
+
+  Future<void> checkConnectivity() async {
+    var connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) {
+      setState(() {
+        hasConnection = false;
+        isLoading = false;
+      });
+    } else {
+      fetchData();
+      initializeDatabase();
+    }
   }
 
   Future<void> fetchData() async {
@@ -48,6 +64,9 @@ class _TelaCapturaState extends State<TelaCaptura> {
       }
     } catch (error, stackTrace) {
       print('Error fetching data: $error\n$stackTrace');
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -66,7 +85,9 @@ class _TelaCapturaState extends State<TelaCaptura> {
   void selectRandomPokemon() {
     final random = List<Pokemon>.from(allPokemon)..shuffle();
     selectedPokemon = random.sublist(0, 6);
-    setState(() {});
+    setState(() {
+      isLoading = false;
+    });
   }
 
   Future<void> initializeDatabase() async {
@@ -80,10 +101,8 @@ class _TelaCapturaState extends State<TelaCaptura> {
       pokemonsCapturados.add(pokemon.name);
 
       try {
-        // Inserir no banco de dados
         await appDatabase.pokemonDao.insertPokemon(pokemon);
 
-        // Exibir mensagem de sucesso
         showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -94,8 +113,6 @@ class _TelaCapturaState extends State<TelaCaptura> {
                 TextButton(
                   onPressed: () async {
                     Navigator.of(context).pop();
-
-                    // Atualiza a lista de Pokémon capturados
                     await carregarPokemonsCapturados();
                   },
                   child: Text('OK'),
@@ -122,30 +139,32 @@ class _TelaCapturaState extends State<TelaCaptura> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: null,
-      body: selectedPokemon.isEmpty
+      body: isLoading
           ? Center(
               child: CircularProgressIndicator(),
             )
-          : ListView.builder(
-              itemCount: selectedPokemon.length,
-              itemBuilder: (context, index) {
-                final pokemon = selectedPokemon[index];
-                return ListTile(
-                  title: Text(pokemon.name),
-                  trailing: ElevatedButton(
-                    onPressed: () {
-                      capturarPokemon(pokemon);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      primary: pokemonsCapturados.contains(pokemon.name)
-                          ? Colors.grey
-                          : null,
-                    ),
-                    child: Text('Capturar'),
-                  ),
-                );
-              },
-            ),
+          : !hasConnection
+              ? Center(
+                  child: Text('Sem conexão com a internet.'),
+                )
+              : ListView.builder(
+                  itemCount: selectedPokemon.length,
+                  itemBuilder: (context, index) {
+                    final pokemon = selectedPokemon[index];
+                    return ListTile(
+                      title: Text(pokemon.name),
+                      trailing: IconButton(
+                        icon: Icon(Icons.catching_pokemon),
+                        color: pokemonsCapturados.contains(pokemon.name)
+                            ? Colors.grey.shade700
+                            : Colors.red,
+                        onPressed: () {
+                          capturarPokemon(pokemon);
+                        },
+                      ),
+                    );
+                  },
+                ),
       floatingActionButton: FloatingActionButton(
         onPressed: selectRandomPokemon,
         tooltip: 'Sortear Pokémon',

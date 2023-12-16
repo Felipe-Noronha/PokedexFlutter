@@ -19,7 +19,6 @@ class TelaSobre extends StatelessWidget {
             SizedBox(height: 8),
             Text('Felipe'),
             Text('Angela'),
-            // Adicione mais informações conforme necessário
           ],
         ),
       ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'pokemon_model.dart';
-import 'package:terceira_prova/app_database.dart'; // Importe o seu banco de dados
+import 'package:terceira_prova/app_database.dart';
 
 class TelaSoltarPokemon extends StatefulWidget {
   final Pokemon pokemon;
@@ -22,7 +22,6 @@ class _TelaSoltarPokemonState extends State<TelaSoltarPokemon> {
     _initializeDatabase();
   }
 
-  // Método assíncrono para inicializar o banco de dados
   _initializeDatabase() async {
     _appDatabase = await $FloorAppDatabase
         .databaseBuilder('app_database.db')
@@ -37,8 +36,7 @@ class _TelaSoltarPokemonState extends State<TelaSoltarPokemon> {
     try {
       await _appDatabase.pokemonDao.deletePokemonById(_pokemon.id);
 
-      // Navegue para a tela anterior após a exclusão
-      Navigator.pop(context, true); // Passa um valor indicando sucesso
+      Navigator.pop(context, true);
     } catch (e) {
       print('Erro ao soltar Pokémon: $e');
     }
@@ -84,7 +82,6 @@ class _TelaSoltarPokemonState extends State<TelaSoltarPokemon> {
               tag: getHeroTag('pokemon-weight'),
               child: Text('Peso: ${_pokemon.weight}'),
             ),
-            // Adicione mais informações conforme necessário
           ],
         ),
       ),
@@ -99,7 +96,7 @@ class _TelaSoltarPokemonState extends State<TelaSoltarPokemon> {
           SizedBox(width: 16),
           FloatingActionButton(
             onPressed: () {
-              Navigator.pop(context, false); // Retorna sem excluir
+              Navigator.pop(context, false);
             },
             tooltip: 'Cancelar',
             child: Icon(Icons.close),

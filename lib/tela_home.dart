@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'tela_sobre.dart'; // Importe sua TelaSobre
+import 'tela_sobre.dart';
 
 class TelaHome extends StatelessWidget {
   @override
@@ -18,6 +18,7 @@ class TelaHome extends StatelessWidget {
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
+                textAlign: TextAlign.center,
               ),
               SizedBox(height: 16),
               Text(
